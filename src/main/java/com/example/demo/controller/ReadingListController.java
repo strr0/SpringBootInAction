@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Book;
+import com.example.demo.entity.Reader;
 import com.example.demo.repository.ReadingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,6 @@ import java.util.List;
 @Controller
 public class ReadingListController {
     private ReadingListRepository readingListRepository;
-    private static final String reader = "strr";
 
     @Autowired
     public ReadingListController(ReadingListRepository readingListRepository){
@@ -21,8 +21,9 @@ public class ReadingListController {
     }
 
     @GetMapping("/readingList")
-    public String readersBooks(Model model){
-        List<Book> readingList = readingListRepository.findByReader(reader);
+    public String readersBooks(Reader reader, Model model){
+        model.addAttribute(reader);
+        List<Book> readingList = readingListRepository.findByReader(reader.getUsername());
         if(readingList != null){
             model.addAttribute("books", readingList);
         }
@@ -30,8 +31,8 @@ public class ReadingListController {
     }
 
     @PostMapping("/readingList")
-    public String addToReadingList(Book book){
-        book.setReader(reader);
+    public String addToReadingList(Reader reader, Book book){
+        book.setReader(reader.getUsername());
         readingListRepository.save(book);
         return "redirect:readingList";
     }
